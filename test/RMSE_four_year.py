@@ -6,11 +6,10 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.preprocessing import StandardScaler
 
 # Adatok betöltése
-column_names = ["Date", "Adj_Close", "Close", "High", "Low", "Open", "Volume"]
+column_names = ["Date","Adj Close", "Close", "High", "Low", "Open", "Volume"]
 data = pd.read_csv("../data/data.csv", skiprows=2, names=column_names, parse_dates=["Date"])
-
 # Napi százalékos változás számítása
-data['Daily_Percentage_Change'] = data['Adj_Close'].pct_change() * 100
+data['Daily_Percentage_Change'] = data['Close'].pct_change() * 100
 
 # Null értékek eltávolítása
 data.dropna(inplace=True)
@@ -49,15 +48,15 @@ for train_size in [i / 100 for i in range(50, 100)]:
 
 rmse_values_converted = [float(value) for value in rmse_values]
 
-print("RMSE values:")
+print("Négyzetes középhiba értékek:")
 for value in rmse_values_converted:
     print(value)
 
 plt.figure(figsize=(10, 6))
-plt.plot(train_sizes, rmse_values, marker='o', color='blue', label='RMSE')
-plt.title("RMSE értékek a train_size függvényében")
-plt.xlabel("Train Size")
-plt.ylabel("RMSE")
+plt.plot(train_sizes, rmse_values, marker='o', color='blue', label='Négyzetes középhiba')
+plt.title("Négyzetes középhiba értékek a train_size függvényében")
+plt.xlabel("Tanítasi százalék")
+plt.ylabel("Négyzetes középhiba százalékok")
 plt.grid(True)
 plt.legend()
 plt.show()
