@@ -26,12 +26,12 @@ data.dropna(inplace=True)
 X = data[['Open', 'High', 'Low', 'Volume']]  # Features
 y = data['Daily_Percentage_Change']  # Target: Daily Percentage Change
 
-# Store the minimum RMSE for each year range
-min_rmse_values = []
+# Store the minimum RMSE and corresponding training percentage for each year range
+best_training_percentages = []
 year_range = []
 
 # Loop over different year ranges
-for start_year in range(2024, 2003, -1):  # From 2023 down to 2004
+for start_year in range(2024, 2003, -1):  # From 2024 down to 2004
     # Filter data for the year range (start_year to 2024)
     filtered_data = data[data['Date'].dt.year >= start_year]
     
@@ -41,9 +41,10 @@ for start_year in range(2024, 2003, -1):  # From 2023 down to 2004
     
     # Store RMSE values for this iteration
     rmse_values = []
+    training_percentages = []
 
     # Iterate over different training sizes
-    for train_size in [i / 100 for i in range(50, 100)]:
+    for train_size in [i / 100 for i in range(40, 100)]:
         # Split data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X_filtered, y_filtered, train_size=train_size, random_state=42)
 
@@ -60,29 +61,30 @@ for start_year in range(2024, 2003, -1):  # From 2023 down to 2004
         y_pred = lasso.predict(X_test_scaled)
         rmse = root_mean_squared_error(y_test, y_pred)
 
-        # Store RMSE for this training size
+        # Store RMSE and training percentage
         rmse_values.append(rmse)
+        training_percentages.append(train_size * 100)  # Convert to percentage (e.g., 0.75 -> 75%)
 
-    # Find the minimum RMSE for this year range and store it
-    min_rmse = min(rmse_values)
-    min_rmse_values.append(min_rmse)
+    # Find the best training percentage corresponding to the minimum RMSE
+    min_rmse_index = rmse_values.index(min(rmse_values))
+    best_training_percent = training_percentages[min_rmse_index]
+
+    best_training_percentages.append(best_training_percent)
     year_range.append(f"{start_year}-{2024}")
 
-# Print the minimum RMSE values for each year range
-print("Minimum RMSE values for each year range:")
-for year, rmse in zip(year_range, min_rmse_values):
-    print(f"{year}: {rmse}")
+# Print the best training percentage for each year range
+print("\nBest Training Percentages for Each Year Range:")
+for year, train_percent in zip(year_range, best_training_percentages):
+    print(f"{year}: {train_percent}%")
 
-# Plotting the minimum RMSE for each year range
+# Plotting the best training percentages for each year range
 plt.figure(figsize=(10, 6))
-plt.plot(year_range, min_rmse_values, marker='o', color='blue', label='Minimum RMSE')
-plt.title("Minimum RMSE for Each Year Range (Start Year to 2024)")
+plt.plot(year_range, best_training_percentages, marker='o', color='red', label='Best Training Percentage')
+plt.title("Best Training Percentage for Each Year Range (Start Year to 2024)")
 plt.xlabel("Year Range")
-plt.ylabel("Root Mean Squared Error")
+plt.ylabel("Training Percentage (%)")
 plt.xticks(rotation=45)
-plt.ylim(0, 2)
+plt.ylim(20, 100)  # Since training percentages range from 50% to 100%
 plt.grid(True)
 plt.legend()
 plt.show()
-
-

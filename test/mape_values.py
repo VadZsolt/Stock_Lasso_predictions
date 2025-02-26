@@ -2,8 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Lasso
-from sklearn.metrics import root_mean_squared_error
 from sklearn.preprocessing import StandardScaler
+import numpy as np  # Import numpy for absolute and division handling
 
 # Load the data
 column_names = ["Date", "Close", "High", "Low", "Open", "Volume"]
@@ -26,12 +26,12 @@ data.dropna(inplace=True)
 X = data[['Open', 'High', 'Low', 'Volume']]  # Features
 y = data['Daily_Percentage_Change']  # Target: Daily Percentage Change
 
-# Store the minimum RMSE for each year range
-min_rmse_values = []
+# Store the minimum MAPE for each year range
+min_mape_values = []
 year_range = []
 
 # Loop over different year ranges
-for start_year in range(2024, 2003, -1):  # From 2023 down to 2004
+for start_year in range(2024, 2003, -1):  # From 2024 down to 2004
     # Filter data for the year range (start_year to 2024)
     filtered_data = data[data['Date'].dt.year >= start_year]
     
@@ -39,8 +39,8 @@ for start_year in range(2024, 2003, -1):  # From 2023 down to 2004
     X_filtered = filtered_data[['Open', 'High', 'Low', 'Volume']]
     y_filtered = filtered_data['Daily_Percentage_Change']
     
-    # Store RMSE values for this iteration
-    rmse_values = []
+    # Store MAPE values for this iteration
+    mape_values = []
 
     # Iterate over different training sizes
     for train_size in [i / 100 for i in range(50, 100)]:
@@ -56,33 +56,37 @@ for start_year in range(2024, 2003, -1):  # From 2023 down to 2004
         lasso = Lasso(alpha=0.1, max_iter=10000, tol=1e-7)
         lasso.fit(X_train_scaled, y_train)
 
-        # Predict and calculate RMSE
+        # Predict values
         y_pred = lasso.predict(X_test_scaled)
-        rmse = root_mean_squared_error(y_test, y_pred)
 
-        # Store RMSE for this training size
-        rmse_values.append(rmse)
+        # Compute MAPE (ignoring zero values in y_test to avoid division errors)
+        mask = y_test != 0  # Avoid division by zero
+        if np.any(mask):  # Check if there's at least one non-zero value
+            mape = np.mean(np.abs((y_test[mask] - y_pred[mask]) / y_test[mask]))
+        else:
+            mape = np.nan  # Assign NaN if all y_test values are zero
 
-    # Find the minimum RMSE for this year range and store it
-    min_rmse = min(rmse_values)
-    min_rmse_values.append(min_rmse)
+        # Store MAPE for this training size
+        mape_values.append(mape)
+
+    # Find the minimum MAPE for this year range and store it
+    min_mape = np.nanmin(mape_values)  # Use nanmin to avoid NaN issues
+    min_mape_values.append(min_mape)
     year_range.append(f"{start_year}-{2024}")
 
-# Print the minimum RMSE values for each year range
-print("Minimum RMSE values for each year range:")
-for year, rmse in zip(year_range, min_rmse_values):
-    print(f"{year}: {rmse}")
+# Print the minimum MAPE values for each year range
+print("Minimum MAPE values for each year range:")
+for year, mape in zip(year_range, min_mape_values):
+    print(f"{year}: {mape:.2f}%")
 
-# Plotting the minimum RMSE for each year range
+# Plotting the minimum MAPE for each year range
 plt.figure(figsize=(10, 6))
-plt.plot(year_range, min_rmse_values, marker='o', color='blue', label='Minimum RMSE')
-plt.title("Minimum RMSE for Each Year Range (Start Year to 2024)")
+plt.plot(year_range, min_mape_values, marker='o', color='blue', label='Minimum MAPE')
+plt.title("Minimum MAPE for Each Year Range (Start Year to 2024)")
 plt.xlabel("Year Range")
-plt.ylabel("Root Mean Squared Error")
+plt.ylabel("Mean Absolute Percentage Error (%)")
 plt.xticks(rotation=45)
-plt.ylim(0, 2)
+plt.ylim(0, max(min_mape_values) + 1)  # Adjust y-axis based on max MAPE
 plt.grid(True)
 plt.legend()
 plt.show()
-
-
