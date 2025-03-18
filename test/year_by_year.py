@@ -81,9 +81,9 @@ def plot_results(year_range, min_rmse_values):
     # Plotting the minimum RMSE for each year range
     plt.figure(figsize=(12, 6))
     plt.plot(year_range, min_rmse_values, marker='o', color='blue', label='Minimum RMSE')
-    plt.title("Minimum RMSE for Each Year Range (Start Year to 2024)")
-    plt.xlabel("Year Range")
-    plt.ylabel("Root Mean Squared Error")
+    plt.title(f"Minimum RMSE értékek 1975 és 2024 között")
+    plt.xlabel("Évek")
+    plt.ylabel("RMSE")
     plt.xticks(rotation=45)
     plt.ylim(0, 2)
     plt.grid(True)
@@ -95,4 +95,4 @@ def main(file_name, start_year=2015):
     year_range, min_rmse_values = year_by_year(data, start_year=start_year)
     plot_results(year_range, min_rmse_values)
 
-main("data_20.csv", 2005)
+main("data_50.csv", 1975)

@@ -84,11 +84,11 @@ def plot_results(year_range, best_training_percentages):
     # Plotting the best training percentages for each year range
     plt.figure(figsize=(10, 6))
     plt.plot(year_range, best_training_percentages, marker='o', color='red', label='Best Training Percentage')
-    plt.title("Best Training Percentage for Each Year Range (Start Year to 2024)")
+    plt.title("Legjobb betanítási értékek 1975 és 2024 között")
     plt.xlabel("Year Range")
-    plt.ylabel("Training Percentage (%)")
+    plt.ylabel("Tanítási százalék (%)")
     plt.xticks(rotation=45)
-    plt.ylim(20, 100)  # Since training percentages range from 50% to 100%
+    plt.ylim(20, 100)  # Since training percentages range from 20% to 100%
     plt.grid(True)
     plt.legend()
     plt.show()

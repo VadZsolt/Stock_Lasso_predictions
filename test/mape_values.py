@@ -63,7 +63,7 @@ def calculate_mape(data, start_year):
             # Compute MAPE (ignoring zero values in y_test to avoid division errors)
             mask = y_test != 0  # Avoid division by zero
             if np.any(mask):  # Check if there's at least one non-zero value
-                mape = np.mean(np.abs((y_test[mask] - y_pred[mask]) / y_test[mask]))
+                mape = np.mean(np.abs((y_test[mask] - y_pred[mask]) / y_test[mask])) / 100
             else:
                 mape = np.nan  # Assign NaN if all y_test values are zero
 
@@ -78,7 +78,7 @@ def calculate_mape(data, start_year):
     # Print the minimum MAPE values for each year range
     print("Minimum MAPE values for each year range:")
     for year, mape in zip(year_range, min_mape_values):
-        print(f"{year}: {mape:.2f}%")
+        print(f"{year}: {mape:.5f}%")
 
     return year_range, min_mape_values
 
@@ -86,11 +86,11 @@ def plot_results(year_range, min_mape_values):
     # Plotting the minimum MAPE for each year range
     plt.figure(figsize=(10, 6))
     plt.plot(year_range, min_mape_values, marker='o', color='blue', label='Minimum MAPE')
-    plt.title("Minimum MAPE for Each Year Range (Start Year to 2024)")
+    plt.title("Minimum MAPE érték 1995 és 2024")
     plt.xlabel("Year Range")
     plt.ylabel("Mean Absolute Percentage Error (%)")
     plt.xticks(rotation=45)
-    plt.ylim(0, max(min_mape_values) + 1)  # Adjust y-axis based on max MAPE
+    plt.ylim(0, max(min_mape_values) + 0.02)  # Adjust y-axis based on max MAPE
     plt.grid(True)
     plt.legend()
     plt.show()
