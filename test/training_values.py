@@ -47,7 +47,7 @@ def training_values(data, start_year):
         # Iterate over different training sizes
         for train_size in [i / 100 for i in range(40, 100)]:
             # Split data into training and testing sets
-            X_train, X_test, y_train, y_test = train_test_split(X_filtered, y_filtered, train_size=train_size, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(X_filtered, y_filtered, train_size=train_size)
 
             # Standardize features
             scaler = StandardScaler()
@@ -95,7 +95,10 @@ def plot_results(year_range, best_training_percentages):
 
 def main(file_name, start_year=2015):
     data=load_data(file_name)
-    year_range, min_mape_values = training_values(data, start_year=start_year)
-    plot_results(year_range, min_mape_values)
+    year_range, train_values = training_values(data, start_year=start_year)
+    plot_results(year_range, train_values)
+    print(f"Maximum Training Percentage: {max(train_values)}%")
+    print(f"Minimum Training Percentage: {min(train_values)}%")
+    print(f"Average Training Percentage: {sum(train_values) / len(train_values)}%")
 
-main("data_50.csv",1975)
+main("dax_data_50.csv", 1988)

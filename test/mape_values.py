@@ -86,7 +86,7 @@ def plot_results(year_range, min_mape_values):
     # Plotting the minimum MAPE for each year range
     plt.figure(figsize=(10, 6))
     plt.plot(year_range, min_mape_values, marker='o', color='blue', label='Minimum MAPE')
-    plt.title("Minimum MAPE érték 1995 és 2024")
+    plt.title("Minimum MAPE érték 1995 és 2024 között")
     plt.xlabel("Year Range")
     plt.ylabel("Mean Absolute Percentage Error (%)")
     plt.xticks(rotation=45)
@@ -100,4 +100,4 @@ def main(file_name, start_year=2015):
     year_range, min_mape_values = calculate_mape(data, start_year=start_year)
     plot_results(year_range, min_mape_values)
 
-main("data_20.csv", 2005)
+main("ftse_data_50.csv", 1995)
